@@ -10,11 +10,13 @@ and how to test it.
 irkerhook.py creates JSON notification requests and ships them to
 irkerd's listener socket.  irkerd run as a daemon in order to maintain
 all the client state required to post multiple notifications while generating
-minimum of join/leave messages (which, from the point of view of
+a minimum of join/leave messages (which, from the point of view of
 humans watching irkerd's output, are mere spam).
 
 See the security.txt document for a detailed discussion of security
-and DoS vulnerabilities related to irker.
+and DoS vulnerabilities related to irker.  The short version: as
+long as your firewall blocks port 6659 and irkerd is running inside
+it, you should be fine.
 
 == Prerequisites ==
 
