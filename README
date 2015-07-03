@@ -14,6 +14,9 @@ The advantage of using this daemon over individual scripted sends
 is that it can maintain connection state for multiple channels,
 avoiding obnoxious join/leave spam.
 
+The file install.txt describes how to install the software safely, so
+it can't be used as a spam conduit.
+
 Please read the files security.txt and hacking.txt before modifying
 this code.
 

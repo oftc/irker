@@ -1,7 +1,7 @@
 = Forge installation instructions =
 
 irker and irkerhook.py are intended to be installed on forge sites
-such as SourceForge, GitHub, Gitorious, Gna, and Savannah.  This
+such as SourceForge, GitHub, GitLab, Gna, and Savannah.  This
 file explains the theory of operation, how to install the code,
 and how to test it.
 
@@ -37,6 +37,10 @@ to show all traffic with IRC servers.
 
 You should *not* make irker visible from outside the site firewall, as
 it can be used to spam IRC channels while masking the source address.
+The firewall should block port 6659.
+
+The design of irker assumes the machine on which it is running is also
+inside the firewall, so that repository hooks can reach port 6659.
 
 The file org.catb.irkerd.plist is a Mac OS/X plist that can be
 installed to launch irkerd as a boot-time service on that system.

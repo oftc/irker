@@ -35,7 +35,7 @@ accessible to untrusted users.
 
 2. Repository project owners can set properties on their repositories
 (including but not limited to irker.*), and may be able to set custom
-post-commit hooks which can execute arbitrary code on the repostory
+post-commit hooks which can execute arbitrary code on the repository
 server. In particular, these people my be able to modify the local
 copy of irkerhook.py.
 
