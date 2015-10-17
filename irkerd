@@ -17,7 +17,9 @@ resource page at <http://www.catb.org/~esr/irker/>.
 
 Requires Python 2.7, or:
 * 2.6 with the argparse package installed.
+
 """
+# SPDX-License-Identifier: BSD-2-clause
 
 from __future__ import unicode_literals
 from __future__ import with_statement
