@@ -7,7 +7,7 @@
 # Second argument must be a payload string.  Standard C-style escapes 
 # such as \n and \t are decoded.
 #
-# SPDX-License-Identifier: BSD-2-clause
+# SPDX-License-Identifier: BSD-2-Clause
 import json
 import socket
 import sys

@@ -19,7 +19,7 @@ Requires Python 2.7, or:
 * 2.6 with the argparse package installed.
 
 """
-# SPDX-License-Identifier: BSD-2-clause
+# SPDX-License-Identifier: BSD-2-Clause
 
 from __future__ import unicode_literals
 from __future__ import with_statement

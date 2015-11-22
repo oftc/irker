@@ -17,7 +17,7 @@
 # The default location of the irker proxy, if the project configuration
 # does not override it.
 #
-# SPDX-License-Identifier: BSD-2-clause
+# SPDX-License-Identifier: BSD-2-Clause
 default_server = "localhost"
 IRKER_PORT = 6659
 
