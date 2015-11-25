@@ -34,8 +34,8 @@ You will need either
 irker needs to run constantly, watching for TCP and UDP traffic on
 port 6659.  Install it accordingly. It has no config file; you can
 just start it up with no arguments.  If you want to see what it's
-doing, give it command-line options -d 1 for sparse messages and -d 2
-to show all traffic with IRC servers.
+doing, give it command-line options -d info for sparse messages and
+-d debug to show all traffic with IRC servers.
 
 You should *not* make irker visible from outside the site firewall, as
 it can be used to spam IRC channels while masking the source address.
