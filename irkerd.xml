@@ -187,7 +187,7 @@ authenticate the nick on receipt of a welcome message.</para></listitem>
 <term>-i</term>
 <listitem><para>Immediate mode, to be run in foreground. Takes a following
 following value interpreted as a channel URL. May take a second
-argument giving a message string; if the sedond argument is absent the
+argument giving a message string; if the second argument is absent the
 message is read from standard input (and may contain newlines). 
 Sends the message, then quits.</para></listitem>
 </varlistentry>
@@ -244,4 +244,3 @@ for updates and other resources, including an installable repository
 hook script.</para>
 </refsect1>
 </refentry>
-
