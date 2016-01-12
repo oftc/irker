@@ -42,7 +42,7 @@ CONNECTION_MAX = 200		# To avoid hitting a thread limit
 
 # No user-serviceable parts below this line
 
-version = "2.14"
+version = "2.15"
 
 import argparse
 import logging
@@ -286,27 +286,14 @@ class IRCServerConnection():
         self.real_server_name = ""
         self.target = target
         self.nickname = nickname
-
-        err = None
-        for res in socket.getaddrinfo(target.servername, target.port, 0, socket.SOCK_STREAM):
-            af, socktype, proto, canonname, sa = res
-            self.socket = None
-            try:
-                self.socket = socket.socket(af, socktype, proto)
-                if target.ssl:
-                    self.socket = self._wrap_socket(
-                        socket=self.socket, target=target, **kwargs)
-                self.socket.bind(('', 0))
-                self.socket.connect(sa)
-            except socket.error as _:
-                err = _
-                if self.socket is not None:
-                    self.socket.close()
-
-        if self.socket is None:
-            err = socket.error("getaddrinfo returns an empty list")
-
-        if err is not None:
+        try:
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if target.ssl:
+                self.socket = self._wrap_socket(
+                    socket=self.socket, target=target, **kwargs)
+            self.socket.bind(('', 0))
+            self.socket.connect((target.servername, target.port))
+        except socket.error as err:
             raise IRCServerConnectionError("Couldn't connect to socket: %s" % err)
 
         if target.ssl:
