@@ -228,6 +228,9 @@ privmsg attribute values with appropriate care.</para>
 <application>irkerd</application> will turn payload strings with
 embedded newlines into multiple IRC sends to avoid having message data
 discarded. </para>
+
+<para>Due to a bug in Python URL parsing, IRC urls with both a # and a
+key part may fail unexpectedly.  The workaround is to remove the #.</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>
