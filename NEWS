@@ -1,7 +1,7 @@
 			irker history 
 
 2.15: 2016-01-12
-  Emergency backout of getaddrinfo, it randomly hanges.
+  Emergency backout of getaddrinfo, it randomly hangs.
 
 2.14: 2016-01-12
   Lookup with getaddrinfo allows use with IPv6.
