@@ -1,5 +1,8 @@
 			irker history 
 
+Repository head:
+  irkerd and irk have been moved to Python 3 (but irkerhook.py left in Python 2).
+
 2.15: 2016-01-12
   Emergency backout of getaddrinfo, it randomly hangs.
 
