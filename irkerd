@@ -30,6 +30,10 @@ Requires Python 2.7, or:
 HOST = "localhost"
 PORT = 6659
 
+PROXY_TYPE = None # Use proxy if set 1: SOCKS4, 2: SOCKS5, 3: HTTP
+PROXY_HOST = ""
+PROXY_PORT = 1080
+
 XMIT_TTL = (3 * 60 * 60)	# Time to live, seconds from last transmit
 PING_TTL = (15 * 60)		# Time to live, seconds from last PING
 HANDSHAKE_TTL = 60		# Time to live, seconds from nick transmit
@@ -61,6 +65,7 @@ import re
 import select
 import signal
 import socket
+import socks
 try:  # Python 3
     import socketserver
 except ImportError:  # Python 2
@@ -289,7 +294,9 @@ class IRCServerConnection():
         self.target = target
         self.nickname = nickname
         try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket = socks.socksocket(socket.AF_INET, socket.SOCK_STREAM)
+            if PROXY_TYPE:
+                self.socket.set_proxy(PROXY_TYPE, PROXY_HOST, PROXY_PORT)
             if target.ssl:
                 self.socket = self._wrap_socket(
                     socket=self.socket, target=target, **kwargs)
