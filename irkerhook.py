@@ -41,7 +41,7 @@ default_channels = "irc://chat.freenode.net/#commits"
 
 version = "2.13"
 
-import os, sys, commands, socket, urllib, subprocess, locale, datetime, re
+import os, sys, socket, urllib, subprocess, locale, datetime, re
 from pipes import quote as shellquote
 
 try:
