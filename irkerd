@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 irkerd - a simple IRC multiplexer daemon
 
@@ -17,6 +17,7 @@ resource page at <http://www.catb.org/~esr/irker/>.
 
 Requires Python 2.7, or:
 * 2.6 with the argparse package installed.
+* Any 3.x
 
 """
 # SPDX-License-Identifier: BSD-2-Clause
@@ -53,7 +54,7 @@ import os.path
 try:  # Python 3
     import queue
 except ImportError:  # Python 2
-    import queue as queue
+    import Queue as queue
 import random
 import re
 import select
@@ -62,7 +63,7 @@ import socket
 try:  # Python 3
     import socketserver
 except ImportError:  # Python 2
-    import socketserver as socketserver
+    import SocketServer as socketserver
 import ssl
 import sys
 import threading
@@ -71,7 +72,7 @@ import traceback
 try:  # Python 3
     import urllib.parse as urllib_parse
 except ImportError:  # Python 2
-    import urllib.parse as urllib_parse
+    import urlparse as urllib_parse
 
 
 LOG = logging.getLogger(__name__)
@@ -79,7 +80,7 @@ LOG.setLevel(logging.ERROR)
 LOG_LEVELS = ['critical', 'error', 'warning', 'info', 'debug']
 
 try:  # Python 2
-    UNICODE_TYPE = str
+    UNICODE_TYPE = unicode
 except NameError:  # Python 3
     UNICODE_TYPE = str
 
@@ -339,9 +340,9 @@ class IRCServerConnection():
             command = None
             arguments = None
             self.handle_event(Event("every_raw_message",
-                                     self.real_server_name,
-                                     None,
-                                     [line]))
+                                    self.real_server_name,
+                                    None,
+                                    [line]))
 
             m = IRCServerConnection.command_re.match(line)
             if m.group("prefix"):
@@ -745,7 +746,7 @@ class Dispatcher:
         # scavenged.
         ancients = []
         for connection in connections:
-            for (chan, age) in list(connections.channels_joined.items()):
+            for (chan, age) in connections.channels_joined.items():
                 if age < time.time() - CHANNEL_TTL:
                     ancients.append((connection, chan, age))
         if ancients:
@@ -848,13 +849,13 @@ class Irker:
         "Log all messages when in watcher mode."
         if self.logfile:
             with open(self.logfile, "ab") as logfp:
-                message = "%03f|%s|%s\n" % \
+                message = u"%03f|%s|%s\n" % \
                           (time.time(), event.source, event.arguments[0])
                 logfp.write(message.encode('utf-8'))
 
     def pending(self):
         "Do we have any pending message traffic?"
-        return [k for (k, v) in list(self.servers.items()) if v.pending()]
+        return [k for (k, v) in self.servers.items() if v.pending()]
 
     def _parse_request(self, line):
         "Request-parsing helper for the handle() method"
@@ -901,7 +902,7 @@ class Irker:
                 self.servers[target.server()].dispatch(
                     target.channel, message, target.key, quit_after=quit_after)
                 # GC dispatchers with no active connections
-                servernames = list(self.servers.keys())
+                servernames = self.servers.keys()
                 for servername in servernames:
                     if not self.servers[servername].live():
                         del self.servers[servername]
@@ -918,7 +919,7 @@ class Irker:
                     # that message activity is likely to be clumpy.
                     if len(self.servers) >= CONNECTION_MAX:
                         oldest = min(
-                            list(self.servers.keys()),
+                            self.servers.keys(),
                             key=lambda name: self.servers[name].last_xmit())
                         del self.servers[oldest]
         except InvalidRequest as e:

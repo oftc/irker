@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Illustrates how to test irkerd.
 #
 # First argument must be a channel URL. If it does not begin with "irc", 
@@ -21,7 +21,7 @@ def connect(server = DEFAULT_SERVER):
 def send(s, target, message):
     data = {"to": target, "privmsg" : message}
     #print(json.dumps(data))
-    s.sendall(bytes(json.dumps(data), "ascii"))
+    s.sendall(bytes(json.dumps(data, encoding="ascii")))
 
 def irk(target, message, server = DEFAULT_SERVER):
     s = connect(server)

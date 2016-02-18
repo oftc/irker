@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # Copyright (c) 2012 Eric S. Raymond <esr@thyrsus.com>
 # Distributed under BSD terms.
 #
@@ -43,13 +43,20 @@ version = "2.13"
 
 import os, sys, commands, socket, urllib, subprocess, locale, datetime, re
 from pipes import quote as shellquote
+
 try:
     import simplejson as json	# Faster, also makes us Python-2.5-compatible
 except ImportError:
     import json
 
+try:
+    getstatusoutput = subprocess.getstatusoutput
+except AttributeError:
+    import commands
+    getstatusoutput = commands.getstatusoutput
+
 def do(command):
-    return unicode(commands.getstatusoutput(command)[1], locale.getlocale()[1] or 'UTF-8').encode(locale.getlocale()[1] or 'UTF-8')
+    return unicode(getstatusoutput(command)[1], locale.getlocale()[1] or 'UTF-8').encode(locale.getlocale()[1] or 'UTF-8')
 
 class Commit:
     def __init__(self, extractor, commit):
