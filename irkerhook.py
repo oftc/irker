@@ -41,7 +41,7 @@ default_channels = "irc://chat.freenode.net/#commits"
 
 version = "2.16"
 
-import os, sys, socket, urllib, subprocess, locale, datetime, re
+import os, sys, socket, urllib2, subprocess, locale, datetime, re
 from pipes import quote as shellquote
 
 try:
@@ -80,13 +80,13 @@ class Commit:
             urlprefix = urlprefixmap.get(self.urlprefix, self.urlprefix)
             webview = (urlprefix % self.__dict__) + self.commit
             try:
-                if urllib.urlopen(webview).getcode() == 404:
-                    raise IOError
+                # See it the url is accessible
+                res = urllib2.urlopen(webview)
                 if self.tinyifier and self.tinyifier.lower() != "none":
                     try:
-                        # Didn't get a retrieval error or 404 on the web
+                        # Didn't get a retrieval error on the web
                         # view, so try to tinyify a reference to it.
-                        self.url = open(urllib.urlretrieve(self.tinyifier + webview)[0]).read()
+                        self.url = urllib2.urlopen(self.tinyifier + webview).read()
                         try:
                             self.url = self.url.decode('UTF-8')
                         except UnicodeError:
@@ -95,8 +95,12 @@ class Commit:
                         self.url = webview
                 else:
                     self.url = webview
-            except IOError:
-                self.url = ""
+            except IOError as e:
+                if e.code == 401:
+                    # Authentication error, so we assume the view is valid
+                    self.url = webview
+                else:
+                    self.url = ""
         res = self.template % self.__dict__
         return unicode(res, 'UTF-8') if not isinstance(res, unicode) else res
 
