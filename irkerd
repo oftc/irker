@@ -40,6 +40,7 @@ CHANNEL_MAX = 18		# Max channels open per socket (default)
 ANTI_FLOOD_DELAY = 1.0		# Anti-flood delay after transmissions, seconds
 ANTI_BUZZ_DELAY = 0.09		# Anti-buzz delay after queue-empty check
 CONNECTION_MAX = 200		# To avoid hitting a thread limit
+RECONNECT_DELAY = 3		# Don't spam servers with connection attempts
 
 # No user-serviceable parts below this line
 
@@ -590,6 +591,7 @@ class Connection:
                         except IRCServerConnectionError as e:
                             LOG.error("irkerd: %s" % e)
                             self.status = "expired"
+                            time.sleep(RECONNECT_DELAY)
                             break
                 elif self.status == "handshaking":
                     if time.time() > self.last_xmit + HANDSHAKE_TTL:
