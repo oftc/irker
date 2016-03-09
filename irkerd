@@ -65,7 +65,11 @@ import re
 import select
 import signal
 import socket
-import socks
+try:
+    import socks
+    socks_on = True
+except ImportError:
+    socks_on = False
 try:  # Python 3
     import socketserver
 except ImportError:  # Python 2
@@ -294,9 +298,11 @@ class IRCServerConnection():
         self.target = target
         self.nickname = nickname
         try:
-            self.socket = socks.socksocket(socket.AF_INET, socket.SOCK_STREAM)
-            if PROXY_TYPE:
+            if socks_on and PROXY_TYPE:
+                self.socket = socks.socksocket(socket.AF_INET,socket.SOCK_STREAM)
                 self.socket.set_proxy(PROXY_TYPE, PROXY_HOST, PROXY_PORT)
+            else:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if target.ssl:
                 self.socket = self._wrap_socket(
                     socket=self.socket, target=target, **kwargs)
