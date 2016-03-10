@@ -509,6 +509,9 @@ class Connection:
         self.connection = None
         if self.status != "expired":
             self.status = "disconnected"
+        # Avoid flooding the server if it disconnects
+        # immediately on sucessful login.
+        time.sleep(RECONNECT_DELAY)
     def handle_kick(self, outof):
         "We've been kicked."
         self.status = "handshaking"
@@ -604,7 +607,6 @@ class Connection:
                         except IRCServerConnectionError as e:
                             LOG.error("irkerd: %s" % e)
                             self.status = "expired"
-                            time.sleep(RECONNECT_DELAY)
                             break
                 elif self.status == "handshaking":
                     if time.time() > self.last_xmit + HANDSHAKE_TTL:
