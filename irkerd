@@ -644,7 +644,7 @@ class Connection:
                                 self.connection.privmsg(channel, segment)
                             except ValueError as err:
                                 LOG.warning((
-                                    "irclib rejected a message to %s on %s "
+                                    "rejected a message to %s on %s "
                                     "because: %s") % (
                                     channel, self.target, UNICODE_TYPE(err)))
                                 LOG.debug(traceback.format_exc())
@@ -663,12 +663,8 @@ class Connection:
             self.status = "expired"
             LOG.debug(traceback.format_exc())
         finally:
-            try:
-                # Make sure we don't leave any zombies behind
-                self.connection.close()
-            except:
-                # Irclib has a habit of throwing fresh exceptions here. Ignore that
-                pass
+            # Make sure we don't leave any zombies behind
+            self.connection.close()
     def live(self):
         "Should this connection not be scavenged?"
         return self.status != "expired"
