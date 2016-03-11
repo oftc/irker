@@ -22,9 +22,6 @@ Requires Python 2.7, or:
 """
 # SPDX-License-Identifier: BSD-2-Clause
 
-
-
-
 # These things might need tuning
 
 HOST = "localhost"
@@ -143,15 +140,13 @@ except NameError:  # Python 3
 # still look similar to parts of irclib because I contributed to that
 # code before giving up on it.
 
-class IRCError(Exception):
+class IRCError(BaseException):
     "An IRC exception"
     pass
-
 
 class InvalidRequest(ValueError):
     "An invalid JSON request"
     pass
-
 
 class IRCClient():
     "An IRC client session to one or more servers."
