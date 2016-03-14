@@ -283,6 +283,9 @@ class GitExtractor(GenericExtractor):
         if not commit.rev:
             # Query git for the abbreviated hash
             commit.rev = do("git log -1 '--pretty=format:%h' " + shellquote(commit.commit))
+            if self.urlprefix in ('gitweb', 'cgit'):
+                # Also truncate the commit used for the announced urls
+                commit.commit = commit.rev
         # Extract the meta-information for the commit
         commit.files = do("git diff-tree -r --name-only " + shellquote(commit.commit))
         commit.files = " ".join(commit.files.strip().split("\n")[1:])
