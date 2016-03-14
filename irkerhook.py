@@ -281,7 +281,11 @@ class GitExtractor(GenericExtractor):
         else: # self.revformat == 'describe'
             commit.rev = do("git describe %s 2>/dev/null" % shellquote(commit.commit))
         if not commit.rev:
-            commit.rev = commit.commit[:12]
+            # Query git for the abbreviated hash
+            commit.rev = do("git log -1 '--pretty=format:%h' " + shellquote(commit.commit))
+            if self.urlprefix in ('gitweb', 'cgit'):
+                # Also truncate the commit used for the announced urls
+                commit.commit = commit.rev
         # Extract the meta-information for the commit
         commit.files = do("git diff-tree -r --name-only " + shellquote(commit.commit))
         commit.files = " ".join(commit.files.strip().split("\n")[1:])
