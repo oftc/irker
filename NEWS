@@ -2,6 +2,8 @@
 
 Repository head:
   Add a reconnect delay (Debian bug #749650).
+  Add proxy support (requres setting some variables in the source file).
+  Use git abbreviated hash to address Debian complaints.
 
 2.16: 2016-02-18
   Code now runs under either Python 2 or Python 3
