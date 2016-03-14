@@ -1,6 +1,6 @@
 			irker history 
 
-Repository head:
+2.17: 2016-03-14
   Add a reconnect delay (Debian bug #749650).
   Add proxy support (requres setting some variables in the source file).
   Use git abbreviated hash to address Debian complaints.
