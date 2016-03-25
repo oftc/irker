@@ -20,8 +20,10 @@ def connect(server = DEFAULT_SERVER):
 
 def send(s, target, message):
     data = {"to": target, "privmsg" : message}
-    #print(json.dumps(data))
-    s.sendall(bytes(json.dumps(data, encoding="ascii")))
+    dump = json.dumps(data)
+    if not isinstance(dump, bytes):
+        dump = dump.encode('ascii')
+    s.sendall(dump)
 
 def irk(target, message, server = DEFAULT_SERVER):
     s = connect(server)
