@@ -237,7 +237,7 @@ class GitExtractor(GenericExtractor):
         self.channels = do("git config --get irker.channels")
         self.email = do("git config --get irker.email")
         self.tcp = do("git config --bool --get irker.tcp")
-        self.template = '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
+        self.template = do("git config --get irker.template") or '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
         self.tinyifier = do("git config --get irker.tinyifier") or default_tinyifier
         self.color = do("git config --get irker.color")
         self.urlprefix = do("git config --get irker.urlprefix") or "gitweb"
@@ -374,7 +374,7 @@ class HgExtractor(GenericExtractor):
         self.channels = ui.config('irker', 'channels')
         self.email = ui.config('irker', 'email')
         self.tcp = str(ui.configbool('irker', 'tcp'))  # converted to bool again in do_overrides
-        self.template = '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
+        self.template = ui.config('irker', 'template') or '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
         self.tinyifier = ui.config('irker', 'tinyifier') or default_tinyifier
         self.color = ui.config('irker', 'color')
         self.urlprefix = (ui.config('irker', 'urlprefix') or

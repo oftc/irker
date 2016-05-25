@@ -163,6 +163,15 @@ a threshold value for the length of the file list in
 characters.</para>
 </listitem>
 </varlistentry>
+<varlistentry>
+<term>template</term>
+<listitem>
+<para>Set the template used to generate notification messages. Only
+available in VCses with config variables; presently this means git or
+hg. All basic commit and aextractor fields, including color switches,
+are available as %() substitutions.</para>
+</listitem>
+</varlistentry>
 </variablelist>
 
 <refsect2 id="git"><title>git</title>
