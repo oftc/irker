@@ -45,7 +45,7 @@ RECONNECT_DELAY = 3		# Don't spam servers with connection attempts
 
 # No user-serviceable parts below this line
 
-version = "2.17"
+version = "2.18"
 
 import argparse
 import logging
