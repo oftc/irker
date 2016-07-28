@@ -2,11 +2,14 @@
 # Distributed under the terms of the BSD LICENSE
 
 [Unit]
-Description=irker daemon
+Description=Internet Relay Chat (IRC) notification daemon
 Requires=network.target
+Documentation=man:irkerd(8) man:irkerhook(1) man:irk(1)
 
 [Service]
 ExecStart=/usr/bin/irkerd
+User=irker
 
 [Install]
 WantedBy=multi-user.target
+Alias=irker.service
