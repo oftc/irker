@@ -7,6 +7,7 @@ Requires=network.target
 
 [Service]
 ExecStart=/usr/bin/irkerd
+User=irker
 
 [Install]
 WantedBy=multi-user.target
