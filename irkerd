@@ -664,7 +664,8 @@ class Connection:
             LOG.debug(traceback.format_exc())
         finally:
             # Make sure we don't leave any zombies behind
-            self.connection.close()
+            if self.connection:
+                self.connection.close()
     def live(self):
         "Should this connection not be scavenged?"
         return self.status != "expired"
