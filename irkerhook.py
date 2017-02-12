@@ -95,12 +95,14 @@ class Commit:
                         self.url = webview
                 else:
                     self.url = webview
-            except IOError as e:
+            except urllib2.HTTPError as e:
                 if e.code == 401:
                     # Authentication error, so we assume the view is valid
                     self.url = webview
                 else:
                     self.url = ""
+            except IOError:
+                self.url = ""
         res = self.template % self.__dict__
         return unicode(res, 'UTF-8') if not isinstance(res, unicode) else res
 
