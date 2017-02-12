@@ -7,6 +7,7 @@ Requires=network.target
 Documentation=man:irkerd(8) man:irkerhook(1) man:irk(1)
 
 [Service]
+User=irker
 ExecStart=/usr/bin/irkerd
 User=irker
 

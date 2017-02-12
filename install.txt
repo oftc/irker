@@ -47,6 +47,12 @@ inside the firewall, so that repository hooks can reach port 6659.
 The file org.catb.irkerd.plist is a Mac OS/X plist that can be
 installed to launch irkerd as a boot-time service on that system.
 
+irker.service is a systemd unit that can run irkerd as a boot-time
+service on systems that support systemd. This is configured to
+run irkerd under a seperate user account (irker), so this needs to
+be setup before starting irker, or the unit needs to be modified
+to use a different user.
+
 == Installing irkerhook.py ==
 
 Under git, a call to irkerhook.py should be installed in the update 
