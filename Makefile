@@ -24,7 +24,7 @@ irkerhook.html: irkerhook.xml
 irk.1: irk.xml
 	xmlto man irk.xml
 irk.html: irk.xml
-	xmlto html-nochunks irkerhook.xml
+	xmlto html-nochunks irk.xml
 
 install.html: install.txt
 	asciidoc -o install.html install.txt
