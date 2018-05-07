@@ -18,12 +18,14 @@
 # does not override it.
 #
 # SPDX-License-Identifier: BSD-2-Clause
+from __future__ import print_function, absolute_import
+
 default_server = "localhost"
 IRKER_PORT = 6659
 
 # The default service used to turn your web-view URL into a tinyurl so it
 # will take up less space on the IRC notification line.
-default_tinyifier = "http://tinyurl.com/api-create.php?url="
+default_tinyifier = u"http://tinyurl.com/api-create.php?url="
 
 # Map magic urlprefix values to actual URL prefixes.
 urlprefixmap = {
@@ -33,7 +35,7 @@ urlprefixmap = {
     }
 
 # By default, ship to the freenode #commits list
-default_channels = "irc://chat.freenode.net/#commits"
+default_channels = u"irc://chat.freenode.net/#commits"
 
 #
 # No user-serviceable parts below this line:
@@ -41,13 +43,24 @@ default_channels = "irc://chat.freenode.net/#commits"
 
 version = "2.17"
 
-import os, sys, socket, urllib2, subprocess, locale, datetime, re
+import os, sys, socket, subprocess, locale, datetime, re
 from pipes import quote as shellquote
+
+try:
+    from urllib2 import urlopen, HTTPError
+except ImportError:
+    from urllib.error import HTTPError
+    from urllib.request import urlopen
 
 try:
     import simplejson as json	# Faster, also makes us Python-2.5-compatible
 except ImportError:
     import json
+
+if sys.version_info.major == 2:
+    string_type = unicode
+else:
+    string_type = str
 
 try:
     getstatusoutput = subprocess.getstatusoutput
@@ -56,7 +69,10 @@ except AttributeError:
     getstatusoutput = commands.getstatusoutput
 
 def do(command):
-    return unicode(getstatusoutput(command)[1], locale.getlocale()[1] or 'UTF-8').encode(locale.getlocale()[1] or 'UTF-8')
+    if sys.version_info.major == 2:
+        return string_type(getstatusoutput(command)[1], locale.getlocale()[1] or 'UTF-8')
+    else:
+        return getstatusoutput(command)[1]
 
 class Commit:
     def __init__(self, extractor, commit):
@@ -72,7 +88,14 @@ class Commit:
         self.author_date = None
         self.commit_date = None
         self.__dict__.update(extractor.__dict__)
-    def __unicode__(self):
+
+        if sys.version_info.major == 2:
+            # Convert __str__ to __unicode__ for python 2
+            self.__unicode__ = self.__str__
+            # Not really needed, but maybe useful for debugging
+            self.__str__ = lambda x: x.__unicode__().encode('utf-8')
+
+    def __str__(self):
         "Produce a notification string from this commit."
         if self.urlprefix.lower() == "none":
             self.url = ""
@@ -81,12 +104,12 @@ class Commit:
             webview = (urlprefix % self.__dict__) + self.commit
             try:
                 # See it the url is accessible
-                res = urllib2.urlopen(webview)
+                res = urlopen(webview)
                 if self.tinyifier and self.tinyifier.lower() != "none":
                     try:
                         # Didn't get a retrieval error on the web
                         # view, so try to tinyify a reference to it.
-                        self.url = urllib2.urlopen(self.tinyifier + webview).read()
+                        self.url = urlopen(self.tinyifier + webview).read()
                         try:
                             self.url = self.url.decode('UTF-8')
                         except UnicodeError:
@@ -95,7 +118,7 @@ class Commit:
                         self.url = webview
                 else:
                     self.url = webview
-            except urllib2.HTTPError as e:
+            except HTTPError as e:
                 if e.code == 401:
                     # Authentication error, so we assume the view is valid
                     self.url = webview
@@ -104,7 +127,7 @@ class Commit:
             except IOError:
                 self.url = ""
         res = self.template % self.__dict__
-        return unicode(res, 'UTF-8') if not isinstance(res, unicode) else res
+        return string_type(res, 'UTF-8') if not isinstance(res, string_type) else res
 
 class GenericExtractor:
     "Generic class for encapsulating data from a VCS."
@@ -239,10 +262,10 @@ class GitExtractor(GenericExtractor):
         self.channels = do("git config --get irker.channels")
         self.email = do("git config --get irker.email")
         self.tcp = do("git config --bool --get irker.tcp")
-        self.template = do("git config --get irker.template") or '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
+        self.template = do("git config --get irker.template") or u'%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
         self.tinyifier = do("git config --get irker.tinyifier") or default_tinyifier
         self.color = do("git config --get irker.color")
-        self.urlprefix = do("git config --get irker.urlprefix") or "gitweb"
+        self.urlprefix = do("git config --get irker.urlprefix") or u"gitweb"
         self.cialike = do("git config --get irker.cialike")
         self.filtercmd = do("git config --get irker.filtercmd")
         # These are git-specific
@@ -434,6 +457,10 @@ extractors = [GitExtractor, HgExtractor, SvnExtractor]
 
 # VCS-dependent code ends here
 
+def convert_message(message):
+    """Convert the message to bytes to send to the socket"""
+    return message.encode(locale.getlocale()[1] or 'UTF-8') + b'\n'
+
 def ship(extractor, commit, debug):
     "Ship a notification for the specified commit."
     metadata = extractor.commit_factory(commit)
@@ -441,7 +468,7 @@ def ship(extractor, commit, debug):
     # This is where we apply filtering
     if extractor.filtercmd:
         cmd = '%s %s' % (shellquote(extractor.filtercmd),
-                         shellquote(json.dumps(metadata.__dict__)))
+                          shellquote(json.dumps(metadata.__dict__)))
         data = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.read()
         try:
             metadata.__dict__.update(json.loads(data))
@@ -466,10 +493,10 @@ def ship(extractor, commit, debug):
     # purposes the commit text is more important.  If it's still too long
     # there's nothing much can be done other than ship it expecting the IRC
     # server to truncate.
-    privmsg = unicode(metadata)
+    privmsg = string_type(metadata)
     if len(privmsg) > 510:
         metadata.files = ""
-        privmsg = unicode(metadata)
+        privmsg = string_type(metadata)
 
     # Anti-spamming guard.  It's deliberate that we get maxchannels not from
     # the user-filtered metadata but from the extractor data - means repo
@@ -481,7 +508,7 @@ def ship(extractor, commit, debug):
     # Ready to ship.
     message = json.dumps({"to": channels, "privmsg": privmsg})
     if debug:
-        print message
+        print(message)
     elif channels:
         try:
             if extractor.email:
@@ -503,16 +530,16 @@ Subject: irker json
                 try:
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     sock.connect((extractor.server or default_server, IRKER_PORT))
-                    sock.sendall(message + "\n")
+                    sock.sendall(convert_message(message))
                 finally:
                     sock.close()
             else:
                 try:
                     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    sock.sendto(message + "\n", (extractor.server or default_server, IRKER_PORT))
+                    sock.sendto(convert_message(message), (extractor.server or default_server, IRKER_PORT))
                 finally:
                     sock.close()
-        except socket.error, e:
+        except socket.error as e:
             sys.stderr.write("%s\n" % e)
 
 if __name__ == "__main__":
@@ -523,7 +550,7 @@ if __name__ == "__main__":
         if arg == '-n':
             notify = False
         elif arg == '-V':
-            print "irkerhook.py: version", version
+            print("irkerhook.py: version", version)
             sys.exit(0)
         elif arg.startswith("--repository="):
             repository = arg[13:]
