@@ -197,7 +197,7 @@ class IRCClient():
     def handle_event(self, connection, event):
         with self.mutex:
             h = self.event_handlers
-            th = sorted(h.get("all_events", []) + h.get(event.type, []))
+            th = h.get("all_events", []) + h.get(event.type, [])
             for handler in th:
                 handler(connection, event)
 
