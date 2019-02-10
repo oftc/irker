@@ -98,7 +98,7 @@ class Commit:
 
     def __str__(self):
         "Produce a notification string from this commit."
-        if self.urlprefix.lower() == "none":
+        if not self.urlprefix:
             self.url = ""
         else:
             urlprefix = urlprefixmap.get(self.urlprefix, self.urlprefix)
@@ -404,14 +404,17 @@ class HgExtractor(GenericExtractor):
         self.template = unifromlocal(ui.config(b'irker', b'template') or b'')
         if not self.template:
             self.template = '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
-        self.tinyifier = unifromlocal(ui.config(b'irker', b'tinyifier')
-                or default_tinyifier.encode('utf-8'))
+        self.tinyifier = unifromlocal(ui.config(
+                b'irker', b'tinyifier',
+                default=default_tinyifier.encode('utf-8')))
         self.color = unifromlocal(ui.config(b'irker', b'color') or b'')
-        self.urlprefix = unifromlocal((ui.config(b'irker', b'urlprefix') or
-                          ui.config(b'web', b'baseurl') or b''))
+        self.urlprefix = unifromlocal(ui.config(
+                b'irker', b'urlprefix', default=ui.config(b'web', b'baseurl')))
         if self.urlprefix:
             # self.commit is appended to this by do_overrides
-            self.urlprefix = self.urlprefix.rstrip('/') + '/rev/'
+            self.urlprefix = (
+                self.urlprefix.rstrip('/')
+                + '/%s/rev/' % unifromlocal(self.repository.root).rstrip('/'))
         self.cialike = unifromlocal(ui.config(b'irker', b'cialike') or b'')
         self.filtercmd = unifromlocal(ui.config(b'irker', b'filtercmd') or b'')
         if not self.project:
