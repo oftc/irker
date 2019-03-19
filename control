@@ -10,13 +10,15 @@ Description: An IRC client that runs as a daemon accepting notification requests
  A hook script that works with git, hg, and svn is included in the
  distribution.
 
-#XBS-Destinations: freshcode
+XBS-Destinations: mailto:ubuntu-devel-discuss@lists.ubuntu.com
 
 Homepage: http://www.catb.org/~esr/irker
 
 XBS-HTML-Target: index.html
 
 XBS-Repository-URL: https://gitlab.com/esr/irker
+
+XBS-Debian-Packages: irker
 
 XBS-OpenHub-URL: http://www.openhub.net/p/irker
 
