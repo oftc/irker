@@ -431,7 +431,7 @@ class HgExtractor(GenericExtractor):
         commit.logmsg = ctx.description()
         # Extract changed files from status against first parent
         st = self.repository.status(ctx.p1().node(), ctx.node())
-        commit.files = ' '.join(st[0] + st[1] + st[2])
+        commit.files = ' '.join(st.modified + st.added + st.removed)
         return commit
 
 def hg_hook(ui, repo, **kwds):
