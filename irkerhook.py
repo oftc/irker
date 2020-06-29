@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # Copyright (c) 2012 Eric S. Raymond <esr@thyrsus.com>
-# Distributed under BSD terms.
+# SPDX-License-Identifier: BSD-2-Clause
 #
 # This script contains git porcelain and porcelain byproducts.
-# Requires Python 2.6, or 2.5 with the simplejson library installed.
+# Requires either Python 2.6, or 2.5 with the simplejson library installed
+# or Python 3.x.
 #
 # usage: irkerhook.py [-V] [-n] [--variable=value...] [commit_id...]
 #
@@ -13,6 +14,7 @@
 #
 # See the irkerhook manual page in the distribution for a detailed
 # explanation of how to configure this hook.
+from __future__ import print_function
 
 # The default location of the irker proxy, if the project configuration
 # does not override it.
@@ -573,4 +575,7 @@ if __name__ == "__main__":
     for commit in commits:
         ship(extractor, commit, not notify)
 
-#End
+# The following sets edit modes for GNU EMACS
+# Local Variables:
+# mode:python
+# End:
