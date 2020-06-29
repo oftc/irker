@@ -37,6 +37,9 @@ def irk(target, message, server = DEFAULT_SERVER):
     s.close()
 
 def main():
+    if len(sys.argv) < 2:
+        sys.stderr.write("irk: a URL argument is required\n")
+        sys.exit(1)
     target = sys.argv[1]
     message = " ".join(sys.argv[2:])
     # XXX: why is this necessary?
@@ -50,3 +53,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# The following sets edit modes for GNU EMACS
+# Local Variables:
+# mode:python
+# End:
