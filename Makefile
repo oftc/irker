@@ -26,12 +26,12 @@ irk.1: irk.xml
 irk.html: irk.xml
 	xmlto html-nochunks irk.xml
 
-install.html: install.txt
-	asciidoc -o install.html install.txt
-security.html: security.txt
-	asciidoc -o security.html security.txt
-hacking.html: hacking.txt
-	asciidoc -o hacking.html hacking.txt
+install.html: install.adoc
+	asciidoc -o install.html install.adoc
+security.html: security.adoc
+	asciidoc -o security.html security.adoc
+hacking.html: hacking.adoc
+	asciidoc -o hacking.html hacking.adoc
 
 install: irk.1 irkerd.8 irkerhook.1 uninstall
 	install -m 755 -o 0 -g 0 -d "$(target)/bin"
@@ -74,9 +74,9 @@ DOCS = \
 	README \
 	COPYING \
 	NEWS \
-	install.txt \
-	security.txt \
-	hacking.txt \
+	install.adoc \
+	security.adoc \
+	hacking.ado \
 	irkerhook.xml \
 	irkerd.xml \
 	irk.xml \
