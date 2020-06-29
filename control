@@ -12,7 +12,7 @@ Description: An IRC client that runs as a daemon accepting notification requests
 
 XBS-Destinations: mailto:ubuntu-devel-discuss@lists.ubuntu.com
 
-Homepage: http://www.catb.org/~esr/irker
+Homepage: mailto:packages@qa.debian.org
 
 XBS-HTML-Target: index.html
 
