@@ -42,8 +42,8 @@ def main():
         sys.exit(1)
     target = sys.argv[1]
     message = " ".join(sys.argv[2:])
-    # XXX: why is this necessary?
-    #message = message.decode('string_escape')
+    # Allows pretty formatting of irker messages
+    message = message.decode('string_escape')
 
     try:
         irk(target, message)
