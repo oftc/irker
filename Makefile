@@ -76,7 +76,7 @@ DOCS = \
 	NEWS \
 	install.adoc \
 	security.adoc \
-	hacking.ado \
+	hacking.adoc \
 	irkerhook.xml \
 	irkerd.xml \
 	irk.xml \
