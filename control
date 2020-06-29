@@ -10,7 +10,7 @@ Description: An IRC client that runs as a daemon accepting notification requests
  A hook script that works with git, hg, and svn is included in the
  distribution.
 
-XBS-Destinations: mailto:ubuntu-devel-discuss@lists.ubuntu.com
+XBS-Destinations: mailto:patrick@gentoo.org
 
 Homepage: mailto:packages@qa.debian.org
 
