@@ -1,5 +1,8 @@
 			irker history 
 
+2.19: 2020-06-29
+  Codebase is now fully forward-poerted to Python 3.
+
 2.18: 2016-06-02 
   Add the ability to set the notification-message template (Debian bug #824512)
 
