@@ -14,7 +14,6 @@
 #
 # See the irkerhook manual page in the distribution for a detailed
 # explanation of how to configure this hook.
-from __future__ import print_function
 
 # The default location of the irker proxy, if the project configuration
 # does not override it.
@@ -192,7 +191,7 @@ class GenericExtractor:
             ln += 1
             if line.startswith("#") or not line.strip():
                 continue
-            elif line.count('=') != 1:
+            if line.count('=') != 1:
                 sys.stderr.write('"%s", line %d: missing = in config line\n' \
                                  % (conf, ln))
                 continue

@@ -176,14 +176,13 @@ class IRCClient():
                              if x is not None and x.socket is not None]
                 sockets = [x.socket for x in connected]
                 if sockets:
-                    connmap = dict([(c.socket.fileno(), c) for c in connected])
+                    connmap = {c.socket.fileno(): c for c in connected}
                     (insocks, _o, _e) = select.select(sockets, [], [], timeout)
                     for s in insocks:
                         try:
                             connmap[s.fileno()].consume()
                         except UnicodeDecodeError as e:
-                            LOG.warn('{0}: invalid encoding ({1})'.format(
-                                self, e))
+                            LOG.warning('%s: invalid encoding (%s)', self, e)
                 else:
                     nextsleep = timeout
             time.sleep(nextsleep)
@@ -295,7 +294,7 @@ class IRCServerConnection():
         self.nickname = nickname
         try:
             if socks_on and PROXY_TYPE:
-                self.socket = socks.socksocket(socket.AF_INET,socket.SOCK_STREAM)
+                self.socket = socks.socksocket(socket.AF_INET, socket.SOCK_STREAM)
                 self.socket.set_proxy(PROXY_TYPE, PROXY_HOST, PROXY_PORT)
             else:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
