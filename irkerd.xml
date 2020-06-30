@@ -26,6 +26,7 @@
      <arg>-n <replaceable>nick</replaceable></arg>
      <arg>-p <replaceable>password</replaceable></arg>
      <arg>-i <replaceable>IRC-URL</replaceable></arg>
+     <arg>-t <replaceable>timeout</replaceable></arg>
      <arg>-V</arg>
      <arg>-h</arg>
      <arg choice='opt'><replaceable>message text</replaceable></arg>
@@ -182,6 +183,11 @@ in the event of a nick collision.</para></listitem>
 <listitem><para>Takes a following value, setting a nickserv
 password to be used. If given, this password is shipped to
 authenticate the nick on receipt of a welcome message.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>-t</term>
+<listitem><para>Takes a following value, setting the connection
+timeout for server-socket opens.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>-i</term>

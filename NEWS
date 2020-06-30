@@ -1,5 +1,8 @@
 			irker history 
 
+Repostory head:
+  Add socket connection-timeout option.
+
 2.19: 2020-06-29
   Codebase is now fully forward-poerted to Python 3.
 

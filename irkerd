@@ -280,7 +280,7 @@ class IRCServerConnection():
             LOG.warning(
                 'cannot check SSL/TLS hostname with Python %s' % sys.version)
 
-    def connect(self, target, nickname, username=None, realname=None,
+    def connect(self, target, nickname, username=None, realname=None, timeout=5.0,
                 **kwargs):
         LOG.debug("connect(server=%r, port=%r, nickname=%r, ...)" % (
             target.servername, target.port, nickname))
@@ -302,7 +302,9 @@ class IRCServerConnection():
                 self.socket = self._wrap_socket(
                     socket=self.socket, target=target, **kwargs)
             self.socket.bind(('', 0))
+            self.socket.settimeout(timeout)
             self.socket.connect((target.servername, target.port))
+            self.socket.settimeout(None)
         except socket.error as err:
             raise IRCServerConnectionError("Couldn't connect to socket: %s" % err)
 
@@ -988,6 +990,9 @@ if __name__ == '__main__':
         '-p', '--password', metavar='PASSWORD',
         help='NickServ password')
     parser.add_argument(
+        '-t', '--timeout', metavar='TIMEOUT', type=float, default=5.0,
+        help="connection timeout in seconds (default: 5.0)")
+    parser.add_argument(
         '-i', '--immediate', metavar='IRC-URL',
         help=(
             'send a single message to IRC-URL and exit.  The message is the '
@@ -1019,6 +1024,7 @@ if __name__ == '__main__':
         password=args.password,
         cafile=args.ca_file,
         certfile=args.cert_file,
+        timeout=args.timeout,
         )
     LOG.info("irkerd version %s" % version)
     if args.immediate:
