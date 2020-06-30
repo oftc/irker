@@ -41,11 +41,13 @@ type switch. It can deduce the repo type by looking, so it should.
 
 4. Bump the version numbers in irkerd and irkerhook.py
 
-5. Update the NEWS file
+5. Run irkerhook.py -n and verify that the output looks sane.
 
-6. git commit -a
+6. Update the NEWS file
 
-7. make release
+7. git commit -a
+
+8. make release
 
 == Thanks where due == 
 
