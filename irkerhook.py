@@ -428,7 +428,7 @@ class HgExtractor(GenericExtractor):
         ctx = self.repository[commit_id]
         commit = Commit(self, unifromlocal(short(ctx.hex())))
         # Extract commit-specific values from a "context" object
-        ctx = self.repository.changectx(node)
+        ctx = self.repository[node]
         commit.rev = '%d:%s' % (ctx.rev(), commit.commit)
         commit.branch = unifromlocal(ctx.branch())
         commit.author = unifromlocal(person(ctx.user()))
