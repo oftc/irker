@@ -192,12 +192,12 @@ class GenericExtractor:
             if line.startswith("#") or not line.strip():
                 continue
             if line.count('=') != 1:
-                sys.stderr.write('"%s", line %d: missing = in config line\n' \
+                sys.stderr.write('%s:%d: missing = in config line\n' \
                                  % (conf, ln))
                 continue
             fields = line.split('=')
             if len(fields) != 2:
-                sys.stderr.write('"%s", line %d: too many fields in config line\n' \
+                sys.stderr.write('%s:%d: too many fields in config line\n' \
                                  % (conf, ln))
                 continue
             variable = fields[0].strip()
