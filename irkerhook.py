@@ -368,6 +368,7 @@ class HgExtractor(GenericExtractor):
     def is_repository(directory):
         return has(directory, [".hg"])
     def __init__(self, arguments):
+        from mercurial.encoding import unifromlocal
         # This fiddling with arguments is necessary since the Mercurial hook can
         # be run in two different ways: either directly via Python (in which
         # case hg should be pointed to the hg_hook function below) or as a
@@ -394,24 +395,27 @@ class HgExtractor(GenericExtractor):
 
         GenericExtractor.__init__(self, arguments)
         # Extract global values from the hg configuration file(s)
-        self.project = ui.config('irker', 'project')
-        self.repo = ui.config('irker', 'repo')
-        self.server = ui.config('irker', 'server')
-        self.channels = ui.config('irker', 'channels')
-        self.email = ui.config('irker', 'email')
-        self.tcp = str(ui.configbool('irker', 'tcp'))  # converted to bool again in do_overrides
-        self.template = ui.config('irker', 'template') or '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
-        self.tinyifier = ui.config('irker', 'tinyifier') or default_tinyifier
-        self.color = ui.config('irker', 'color')
-        self.urlprefix = (ui.config('irker', 'urlprefix') or
-                          ui.config('web', 'baseurl') or '')
+        self.project = unifromlocal(ui.config(b'irker', b'project') or b'')
+        self.repo = unifromlocal(ui.config(b'irker', b'repo') or b'')
+        self.server = unifromlocal(ui.config(b'irker', b'server') or b'')
+        self.channels = unifromlocal(ui.config(b'irker', b'channels') or b'')
+        self.email = unifromlocal(ui.config(b'irker', b'email') or b'')
+        self.tcp = str(ui.configbool(b'irker', b'tcp'))  # converted to bool again in do_overrides
+        self.template = unifromlocal(ui.config(b'irker', b'template') or b'')
+        if not self.template:
+            self.template = '%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
+        self.tinyifier = unifromlocal(ui.config(b'irker', b'tinyifier')
+                or default_tinyifier.encode('utf-8'))
+        self.color = unifromlocal(ui.config(b'irker', b'color') or b'')
+        self.urlprefix = unifromlocal((ui.config(b'irker', b'urlprefix') or
+                          ui.config(b'web', b'baseurl') or b''))
         if self.urlprefix:
             # self.commit is appended to this by do_overrides
             self.urlprefix = self.urlprefix.rstrip('/') + '/rev/'
-        self.cialike = ui.config('irker', 'cialike')
-        self.filtercmd = ui.config('irker', 'filtercmd')
+        self.cialike = unifromlocal(ui.config(b'irker', b'cialike') or b'')
+        self.filtercmd = unifromlocal(ui.config(b'irker', b'filtercmd') or b'')
         if not self.project:
-            self.project = os.path.basename(self.repository.root.rstrip('/'))
+            self.project = os.path.basename(unifromlocal(self.repository.root).rstrip('/'))
         self.do_overrides()
     def head(self):
         "Return a symbolic reference to the tip commit of the current branch."
@@ -420,19 +424,20 @@ class HgExtractor(GenericExtractor):
         "Make a Commit object holding data for a specified commit ID."
         from mercurial.node import short
         from mercurial.templatefilters import person
-        node = self.repository.lookup(commit_id)
-        commit = Commit(self, short(node))
+        from mercurial.encoding import unifromlocal
+        ctx = self.repository[commit_id]
+        commit = Commit(self, unifromlocal(short(ctx.hex())))
         # Extract commit-specific values from a "context" object
         ctx = self.repository.changectx(node)
         commit.rev = '%d:%s' % (ctx.rev(), commit.commit)
-        commit.branch = ctx.branch()
-        commit.author = person(ctx.user())
+        commit.branch = unifromlocal(ctx.branch())
+        commit.author = unifromlocal(person(ctx.user()))
         commit.author_date = \
             datetime.datetime.fromtimestamp(ctx.date()[0]).strftime('%Y-%m-%d %H:%M:%S')
-        commit.logmsg = ctx.description()
+        commit.logmsg = unifromlocal(ctx.description())
         # Extract changed files from status against first parent
         st = self.repository.status(ctx.p1().node(), ctx.node())
-        commit.files = ' '.join(st.modified + st.added + st.removed)
+        commit.files = unifromlocal(b' '.join(st.modified + st.added + st.removed))
         return commit
 
 def hg_hook(ui, repo, **kwds):
