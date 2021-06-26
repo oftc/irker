@@ -968,6 +968,7 @@ def in_background():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=__doc__.strip().splitlines()[0])
+    password_group = parser.add_mutually_exclusive_group()
     parser.add_argument(
         '-c', '--ca-file', metavar='PATH',
         help='file of trusted certificates for SSL/TLS')
@@ -986,9 +987,12 @@ if __name__ == '__main__':
     parser.add_argument(
         '-n', '--nick', metavar='NAME', default='irker%03d',
         help="nickname (optionally with a '%%.*d' server connection marker)")
-    parser.add_argument(
+    password_group.add_argument(
         '-p', '--password', metavar='PASSWORD',
         help='NickServ password')
+    password_group.add_argument(
+        '-P', '--password-file', metavar='PATH', type=argparse.FileType('r'),
+        help='NickServ password from file')
     parser.add_argument(
         '-t', '--timeout', metavar='TIMEOUT', type=float, default=5.0,
         help="connection timeout in seconds (default: 5.0)")
@@ -1016,6 +1020,11 @@ if __name__ == '__main__':
     if args.log_level:
         log_level = getattr(logging, args.log_level.upper())
         LOG.setLevel(log_level)
+
+    if args.password_file:
+        with args.file as f:
+            # IRC passwords must be at most 128 bytes, and cannot contain a \n
+            args.password = f.read(128).split("\n")[0].strip()
 
     irker = Irker(
         logfile=args.log_file,
