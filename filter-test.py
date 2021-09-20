@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Test hook to launch an irker instance (if it doesn't already exist)
 # just before shipping the notification. We start it in in another terminal

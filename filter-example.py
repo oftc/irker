@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # This is a trivial example of a metadata filter.
 # All it does is change the name of the commit's author.
 # It could do other things, including modifying the
