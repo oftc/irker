@@ -1,6 +1,6 @@
 			irker history 
 
-Repository head:
+2.20: 2021-09-20
   Added --posord-file option
   Add socket connection-timeout option.
   Ubunto delreted /usr/bin/python, change all invocations to Python 3.
