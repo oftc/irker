@@ -1,7 +1,9 @@
 			irker history 
 
-Repostory head:
+Repository head:
+  Added --posord-file option
   Add socket connection-timeout option.
+  Ubunto delreted /usr/bin/python, change all invocations to Python 3.
 
 2.19: 2020-06-29
   Codebase is now fully forward-poerted to Python 3.

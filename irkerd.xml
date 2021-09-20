@@ -25,6 +25,7 @@
      <arg>-H <replaceable>host</replaceable></arg>
      <arg>-n <replaceable>nick</replaceable></arg>
      <arg>-p <replaceable>password</replaceable></arg>
+     <arg>-P <replaceable>password-file</replaceable></arg>
      <arg>-i <replaceable>IRC-URL</replaceable></arg>
      <arg>-t <replaceable>timeout</replaceable></arg>
      <arg>-V</arg>
@@ -183,6 +184,11 @@ in the event of a nick collision.</para></listitem>
 <listitem><para>Takes a following value, setting a nickserv
 password to be used. If given, this password is shipped to
 authenticate the nick on receipt of a welcome message.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>-P</term>
+<listitem><para>Liuke p, but the argument is interpreted as a filename
+from which to read the password</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>-t</term>
