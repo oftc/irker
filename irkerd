@@ -45,8 +45,11 @@ RECONNECT_DELAY = 3		# Don't spam servers with connection attempts
 
 # No user-serviceable parts below this line
 
+# pylint: disable=too-many-lines,invalid-name,missing-function-docstring,missing-class-docstring,redefined-outer-name,logging-not-lazy,too-many-arguments,too-many-branches,too-many-instance-attributes,attribute-defined-outside-init,raise-missing-from,no-else-return,no-else-break,too-many-statements,too-many-nested-blocks,no-self-use
+
 version = "2.20"
 
+# pylint: disable=wrong-import-position
 import argparse
 import logging
 import logging.handlers
@@ -142,10 +145,12 @@ except NameError:  # Python 3
 
 class IRCError(BaseException):
     "An IRC exception"
+    # pylint: disable=unnecessary-pass
     pass
 
 class InvalidRequest(ValueError):
     "An invalid JSON request"
+    # pylint: disable=unnecessary-pass
     pass
 
 class IRCClient():
@@ -251,6 +256,7 @@ class IRCServerConnection():
         try:  # Python 3.2 and greater
             ssl_context = ssl.SSLContext(protocol)
         except AttributeError:  # Python < 3.2
+            # pylint: disable=deprecated-method
             self.socket = ssl.wrap_socket(
                 socket, certfile=certfile, cert_reqs=ssl.CERT_REQUIRED,
                 ssl_version=protocol, ca_certs=cafile)
@@ -441,6 +447,7 @@ class IRCServerConnection():
         except socket.error:
             self.disconnect("Connection reset by peer.")
 
+# pylint: disable=useless-object-inheritance,too-few-public-methods
 class Event(object):
     def __init__(self, evtype, source, target, arguments=None):
         self.type = evtype
@@ -537,6 +544,7 @@ class Connection:
             self.queue.put((channel, None, key))
     def dequeue(self):
         "Try to ship pending messages from the queue."
+        # pylint:disable=broad-except
         try:
             while True:
                 # We want to be kind to the IRC servers and not hold unused
@@ -803,7 +811,7 @@ class Irker:
     def thread_launch(self):
         thread = threading.Thread(target=self.irc.spin)
         thread.setDaemon(True)
-        self.irc._thread = thread
+        #self.irc._thread = thread
         thread.start()
     def _handle_ping(self, connection, _event):
         "PING arrived, bump the last-received time for the connection."

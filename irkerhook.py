@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 # Copyright (c) 2012 Eric S. Raymond <esr@thyrsus.com>
 # SPDX-License-Identifier: BSD-2-Clause
-#
-# This script contains git porcelain and porcelain byproducts.
-# Requires either Python 2.6, or 2.5 with the simplejson library installed
-# or Python 3.x.
-#
-# usage: irkerhook.py [-V] [-n] [--variable=value...] [commit_id...]
-#
-# This script is meant to be run in an update or post-commit hook.
-# Try it with -n to see the notification dumped to stdout and verify
-# that it looks sane. With -V this script dumps its version and exits.
-#
-# See the irkerhook manual page in the distribution for a detailed
-# explanation of how to configure this hook.
+'''
+This script contains git porcelain and porcelain byproducts.
+Requires either Python 2.6, or 2.5 with the simplejson library installed
+or Python 3.x.
 
-# The default location of the irker proxy, if the project configuration
-# does not override it.
-#
+usage: irkerhook.py [-V] [-n] [--variable=value...] [commit_id...]
+
+This script is meant to be run in an update or post-commit hook.
+Try it with -n to see the notification dumped to stdout and verify
+that it looks sane. With -V this script dumps its version and exits.
+
+See the irkerhook manual page in the distribution for a detailed
+explanation of how to configure this hook.
+
+The default location of the irker proxy, if the project configuration
+does not override it.
+'''
 # SPDX-License-Identifier: BSD-2-Clause
 from __future__ import print_function, absolute_import
+
+# pylint: disable=line-too-long,invalid-name,missing-function-docstring,missing-class-docstring,no-else-break,no-else-return,too-many-instance-attributes,too-many-locals,too-many-branches,too-many-statements,redefined-outer-name,import-outside-toplevel,raise-missing-from
 
 default_server = "localhost"
 IRKER_PORT = 6659
@@ -44,6 +46,7 @@ default_channels = u"irc://chat.freenode.net/#commits"
 
 version = "2.19"
 
+# pylint: disable=multiple-imports,wrong-import-position
 import os, sys, socket, subprocess, locale, datetime, re
 from pipes import quote as shellquote
 
@@ -59,6 +62,7 @@ except ImportError:
     import json
 
 if sys.version_info.major == 2:
+    # pylint: disable=undefined-variable
     string_type = unicode
 else:
     string_type = str
@@ -66,6 +70,7 @@ else:
 try:
     getstatusoutput = subprocess.getstatusoutput
 except AttributeError:
+    # pylint: disable=import-error
     import commands
     getstatusoutput = commands.getstatusoutput
 
@@ -75,6 +80,7 @@ def do(command):
     else:
         return getstatusoutput(command)[1]
 
+# pylint: disable=too-few-public-methods
 class Commit:
     def __init__(self, extractor, commit):
         "Per-commit data."
@@ -86,8 +92,10 @@ class Commit:
         self.files = None
         self.logmsg = None
         self.url = None
+        self.author_name = None
         self.author_date = None
         self.commit_date = None
+        self.id = None
         self.__dict__.update(extractor.__dict__)
 
         if sys.version_info.major == 2:
@@ -98,9 +106,11 @@ class Commit:
 
     def __str__(self):
         "Produce a notification string from this commit."
+        # pylint: disable=no-member
         if not self.urlprefix:
             self.url = ""
         else:
+            # pylint: disable=no-member
             urlprefix = urlprefixmap.get(self.urlprefix, self.urlprefix)
             webview = (urlprefix % self.__dict__) + self.commit
             try:
@@ -127,6 +137,7 @@ class Commit:
                     self.url = ""
             except IOError:
                 self.url = ""
+        # pylint: disable=no-member
         res = self.template % self.__dict__
         return string_type(res, 'UTF-8') if not isinstance(res, string_type) else res
 
@@ -153,7 +164,7 @@ class GenericExtractor:
         self.filtercmd = None
         # Color highlighting is disabled by default.
         self.color = None
-        self.bold = self.green = self.blue = self.yellow = ""
+        self.bold = self.green = self.blue = self.yellow = self.red = ""
         self.brown = self.magenta = self.cyan = self.reset = ""
     def activate_color(self, style):
         "IRC color codes."
@@ -166,6 +177,7 @@ class GenericExtractor:
             self.bold = '\x02'
             self.green = '\x0303'
             self.blue = '\x0302'
+            self.red = '\x0304'
             self.red = '\x0305'
             self.yellow = '\x0307'
             self.brown = '\x0305'
@@ -219,9 +231,9 @@ class GenericExtractor:
                     setattr(self, key, val)
         for (key, val) in self.__dict__.items():
             if key in GenericExtractor.booleans:
-                if type(val) == type("") and val.lower() == "true":
+                if isinstance(val, str) and val.lower() == "true":
                     setattr(self, key, True)
-                elif type(val) == type("") and val.lower() == "false":
+                elif isinstance(val, str) and val.lower() == "false":
                     setattr(self, key, False)
             elif key in GenericExtractor.numerics:
                 setattr(self, key, int(val))
@@ -292,6 +304,7 @@ class GitExtractor(GenericExtractor):
                 here = os.path.dirname(here)
         # Get overrides
         self.do_overrides()
+    # pylint: disable=no-self-use
     def head(self):
         "Return a symbolic reference to the tip commit of the current branch."
         return "HEAD"
@@ -344,8 +357,10 @@ class SvnExtractor(GenericExtractor):
         self.project = os.path.basename(self.repository)
         self.template = '%(bold)s%(project)s%(reset)s: %(green)s%(author)s%(reset)s %(repo)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
         self.urlprefix = "viewcvs"
+        self.id = None
         self.load_preferences(os.path.join(self.repository, "irker.conf"))
         self.do_overrides()
+    # pylint: disable=no-self-use
     def head(self):
         sys.stderr.write("irker: under svn, hook requires a commit argument.\n")
         raise SystemExit(1)
@@ -377,7 +392,7 @@ class HgExtractor(GenericExtractor):
         # ui objects from Mercurial, in the second case, we have to create them
         # from the root path.
         self.repository = None
-        if arguments and type(arguments[0]) == type(()):
+        if arguments and isinstance(arguments[0], tuple):
             # Called from hg_hook function
             ui, self.repository = arguments[0]
             arguments = []  # Should not be processed further by do_overrides
@@ -420,6 +435,7 @@ class HgExtractor(GenericExtractor):
         if not self.project:
             self.project = os.path.basename(unifromlocal(self.repository.root).rstrip('/'))
         self.do_overrides()
+    # pylint: disable=no-self-use
     def head(self):
         "Return a symbolic reference to the tip commit of the current branch."
         return "-1"
@@ -490,7 +506,7 @@ def ship(extractor, commit, debug):
            and extractor.cialike.lower() != "none" \
            and len(metadata.files) > int(extractor.cialike):
         files = metadata.files.split()
-        dirs = set([d.rpartition('/')[0] for d in files])
+        dirs = {d.rpartition('/')[0] for d in files}
         if len(dirs) == 1:
             metadata.files = "(%s files)" % (len(files),)
         else:
