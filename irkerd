@@ -535,6 +535,27 @@ class Connection:
         for (channel, message, key) in qcopy:
             self.queue.put((channel, message, key))
         self.status = "ready"
+    def send(self, channel, message):
+        for segment in message.split("\n"):
+            # Truncate the message if it's too long,
+            # but we're working with characters here,
+            # not bytes, so we could be off.
+            # 500 = 512 - CRLF - 'PRIVMSG ' - ' :'
+            maxlength = 500 - len(channel)
+            if len(segment) > maxlength:
+                segment = segment[:maxlength]
+            try:
+                self.connection.privmsg(channel, segment)
+            except ValueError as err:
+                LOG.warning((
+                    "rejected a message to %s on %s "
+                    "because: %s") % (
+                    channel, self.target, UNICODE_TYPE(err)))
+                LOG.debug(traceback.format_exc())
+            time.sleep(ANTI_FLOOD_DELAY)
+        self.last_xmit = time.time()
+        LOG.info("XMIT_TTL bump (%s transmission) at %s" % (
+            self.target, time.asctime()))
     def enqueue(self, channel, message, key, quit_after=False):
         "Enque a message for transmission."
         if self.thread is None or not self.thread.is_alive():
@@ -638,6 +659,7 @@ class Connection:
                     if channel not in self.channels_joined:
                         self.connection.join(channel, key=key)
                         LOG.info("joining %s on %s." % (channel, self.target))
+                        self.channels_joined[channel] = time.time()
                     # None is magic - it's a request to quit the server
                     if message is None:
                         self.connection.quit()
@@ -645,26 +667,7 @@ class Connection:
                     # to join a channel for logging, so suppress the
                     # privmsg send unless there is actual traffic.
                     elif message:
-                        for segment in message.split("\n"):
-                            # Truncate the message if it's too long,
-                            # but we're working with characters here,
-                            # not bytes, so we could be off.
-                            # 500 = 512 - CRLF - 'PRIVMSG ' - ' :'
-                            maxlength = 500 - len(channel)
-                            if len(segment) > maxlength:
-                                segment = segment[:maxlength]
-                            try:
-                                self.connection.privmsg(channel, segment)
-                            except ValueError as err:
-                                LOG.warning((
-                                    "rejected a message to %s on %s "
-                                    "because: %s") % (
-                                    channel, self.target, UNICODE_TYPE(err)))
-                                LOG.debug(traceback.format_exc())
-                            time.sleep(ANTI_FLOOD_DELAY)
-                    self.last_xmit = self.channels_joined[channel] = time.time()
-                    LOG.info("XMIT_TTL bump (%s transmission) at %s" % (
-                        self.target, time.asctime()))
+                        self.send(channel, message)
                     self.queue.task_done()
                 elif self.status == "expired":
                     LOG.error(
