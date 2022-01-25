@@ -243,7 +243,8 @@ class IRCServerConnection():
     codemap = {
         "001": "welcome",
         "005": "featurelist",
-        "404": "cannotsendtochan",
+        "324": "mode",
+        #"404": "cannotsendtochan",
         "432": "erroneusnickname",
         "433": "nicknameinuse",
         "436": "nickcollision",
@@ -480,7 +481,8 @@ class Connection:
         self.last_ping = time.time()
         self.channels_joined = {}
         self.channel_limits = {}
-        self.channel_needs_join = {}	# Set on receipt of cannotsendtochan, not yet used
+        #self.channel_needs_join = {}	# Set on receipt of cannotsendtochan, not yet used
+        self.channel_mode_queried = set()
         # The consumer thread
         self.queue = queue.Queue()
         self.thread = None
@@ -537,9 +539,13 @@ class Connection:
         for (channel, message, key) in qcopy:
             self.queue.put((channel, message, key))
         self.status = "ready"
-    def handle_cannotsendtochan(self, outof):
-        "Joinless message send refused."
-        self.channel_needs_join.add(outof)
+    #def handle_cannotsendtochan(self, outof):
+    #    "Joinless message send refused."
+    #    self.channel_needs_join.add(outof)
+    def handle_mode(self, outof, arg):
+        "Mode reply."
+        # Stub - not yet used
+        LOG.info("MODE source %s has mode %s" % (outof, arg))
     def send(self, channel, message):
         for segment in message.split("\n"):
             # Truncate the message if it's too long,
@@ -817,7 +823,8 @@ class Irker:
         self.irc.add_event_handler("featurelist", self._handle_features)
         self.irc.add_event_handler("disconnect", self._handle_disconnect)
         self.irc.add_event_handler("kick", self._handle_kick)
-        self.irc.add_event_handler("cannotsendtochan", self._handle_cannotsendtochan)
+        #self.irc.add_event_handler("cannotsendtochan", self._handle_cannotsendtochan)
+        self.irc.add_event_handler("mode", self._handle_mode)
         self.irc.add_event_handler("every_raw_message", self._handle_every_raw_message)
         self.servers = {}
     def thread_launch(self):
@@ -876,13 +883,19 @@ class Irker:
             target, connection.target))
         if connection.context:
             connection.context.handle_kick(target)
-    def _handle_cannotsendtochan(self, connection, event):
-        "Selver refused message send without channel join"
-        target = event.target
-        LOG.info("joinless message refusal from %s on %s" % (
-            target, connection.target))
+    #def _handle_cannotsendtochan(self, connection, event):
+    #    "Server refused message send without channel join"
+    #    target = event.target
+    #    LOG.info("joinless message refusal from %s on %s" % (
+    #        target, connection.target))
+    #    if connection.context:
+    #        connection.context.handle_cannotsendtochan(target)        
+    def _handle_mode(self, connection, event):
+        "Process mode reply."
+        LOG.info("mode reply %s on %s with %s" % (
+            event.target, connection.target, event.arguments))
         if connection.context:
-            connection.context.handle_cannotsendtochan(target)        
+            connection.context.handle_mode(event.target, event.arguments[0])        
     def _handle_every_raw_message(self, _connection, event):
         "Log all messages when in watcher mode."
         if self.logfile:
