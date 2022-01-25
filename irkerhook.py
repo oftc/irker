@@ -44,7 +44,7 @@ default_channels = u"irc://chat.freenode.net/#commits"
 # No user-serviceable parts below this line:
 #
 
-version = "2.19"
+version = "2.21"
 
 # pylint: disable=multiple-imports,wrong-import-position
 import os, sys, socket, subprocess, locale, datetime, re
