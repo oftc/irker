@@ -161,6 +161,7 @@ class IRCClient():
         self.event_handlers = {}
         self.add_event_handler("ping",
                                lambda c, e: c.ship("PONG %s" % e.target))
+        self.drops = 0
 
     def newserver(self):
         "Initialize a new server-connection object."
@@ -169,7 +170,7 @@ class IRCClient():
             self.server_connections.append(conn)
         return conn
 
-    def spin(self, timeout=0.2):
+    def spin(self, immediate=False, timeout=0.2):
         "Spin processing data from connections forever."
         # Outer loop should specifically *not* be mutex-locked.
         # Otherwise no other thread would ever be able to change
@@ -190,6 +191,8 @@ class IRCClient():
                             LOG.warning('%s: invalid encoding (%s)', self, e)
                 else:
                     nextsleep = timeout
+            if immediate and self.drops > 0:
+                break
             time.sleep(nextsleep)
 
     def add_event_handler(self, event, handler):
@@ -208,7 +211,7 @@ class IRCClient():
     def drop_connection(self, connection):
         with self.mutex:
             self.server_connections.remove(connection)
-
+            self.drops += 1
 
 class LineBufferedStream():
     "Line-buffer a read stream."
@@ -1055,7 +1058,7 @@ if __name__ == '__main__':
         irker.irc.add_event_handler("quit", lambda _c, _e: sys.exit(0))
         irker.handle('{"to":"%s","privmsg":"%s"}' % (
             args.immediate, args.message), quit_after=True)
-        irker.irc.spin()
+        irker.irc.spin(immediate=True)
     else:
         if args.message:
             LOG.error(
