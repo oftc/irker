@@ -1,5 +1,8 @@
 			irker history 
 
+Repository head::
+  Restore function of immediate option.
+
 2.20: 2021-09-20
   Added --posord-file option
   Add socket connection-timeout option.
