@@ -59,7 +59,7 @@ clean:
 	rm -f irkerd.8 irkerhook.1 irk.1 irker-*.tar.gz *~ *.html
 
 pylint:
-	@pylint $(PYLINTOPTS) irkerd irkerhook.py
+	@pylint --score=n irkerd irkerhook.py
 
 loc:
 	@echo "LOC:"; wc -l irkerd irkerhook.py
