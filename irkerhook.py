@@ -383,7 +383,7 @@ class HgExtractor(GenericExtractor):
     def is_repository(directory):
         return has(directory, [".hg"])
     def __init__(self, arguments):
-        from mercurial.encoding import unifromlocal
+        from mercurial.encoding import unifromlocal, unitolocal
         # This fiddling with arguments is necessary since the Mercurial hook can
         # be run in two different ways: either directly via Python (in which
         # case hg should be pointed to the hg_hook function below) or as a
@@ -400,12 +400,12 @@ class HgExtractor(GenericExtractor):
             # Called from command line: create repo/ui objects
             from mercurial import hg, ui as uimod
 
-            repopath = '.'
+            repopath = b'.'
             for tok in arguments:
                 if tok.startswith('--repository='):
-                    repopath = tok[13:]
+                    repopath = unitolocal(tok[13:])
             ui = uimod.ui()
-            ui.readconfig(os.path.join(repopath, '.hg', 'hgrc'), repopath)
+            ui.readconfig(os.path.join(repopath, b'.hg', b'hgrc'), repopath)
             self.repository = hg.repository(ui, repopath)
 
         GenericExtractor.__init__(self, arguments)
@@ -443,7 +443,9 @@ class HgExtractor(GenericExtractor):
         "Make a Commit object holding data for a specified commit ID."
         from mercurial.node import short
         from mercurial.templatefilters import person
-        from mercurial.encoding import unifromlocal
+        from mercurial.encoding import unifromlocal, unitolocal
+        if isinstance(commit_id, str) and not isinstance(commit_id, bytes):
+            commit_id = unitolocal(commit_id)
         ctx = self.repository[commit_id]
         commit = Commit(self, unifromlocal(short(ctx.hex())))
         # Extract commit-specific values from a "context" object
