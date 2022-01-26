@@ -7,17 +7,17 @@ listening socket.
 It is meant to be used by hook scripts in version-control
 repositories, allowing them to send commit notifications to project
 IRC channels.  A hook script, irkerhook.py, supporting git, hg, and
-Subversion is included in the distribution; see the install.txt file
+Subversion is included in the distribution; see the install.adoc file
 for installation instructions.
 
 The advantage of using this daemon over individual scripted sends 
 is that it can maintain connection state for multiple channels,
 avoiding obnoxious join/leave spam.
 
-The file install.txt describes how to install the software safely, so
+The file install.adoc describes how to install the software safely, so
 it can't be used as a spam conduit.
 
-Please read the files security.txt and hacking.txt before modifying
+Please read the files security.adoc and hacking.adoc before modifying
 this code.
 
 						Eric S. Raymond
