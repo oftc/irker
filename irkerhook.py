@@ -23,7 +23,7 @@ from __future__ import print_function, absolute_import
 
 # pylint: disable=line-too-long,invalid-name,missing-function-docstring,missing-class-docstring,no-else-break,no-else-return,too-many-instance-attributes,too-many-locals,too-many-branches,too-many-statements,redefined-outer-name,import-outside-toplevel,raise-missing-from,consider-using-f-string,redundant-u-string-prefix,redundant-u-string-prefix,consider-using-with
 
-default_server = "localhost"
+default_server = "192.168.3.2"
 IRKER_PORT = 6659
 
 # The default service used to turn your web-view URL into a tinyurl so it

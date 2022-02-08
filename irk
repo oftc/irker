@@ -13,7 +13,7 @@ import socket
 import sys
 import fileinput
 
-DEFAULT_SERVER = ("localhost", 6659)
+DEFAULT_SERVER = ("192.168.3.2", 6659)
 
 def connect(server = DEFAULT_SERVER):
     return socket.create_connection(server)
