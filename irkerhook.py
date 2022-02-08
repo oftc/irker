@@ -342,7 +342,7 @@ class GitExtractor(GenericExtractor):
         # Might be be nice to ship the full email address, if not
         # for spammers' address harvesters - getting this wrong
         # would make the freenode #commits channel into harvester heaven.
-        commit.author = commit.mail.split("@")[0]
+        commit.author = commit.author_name
         commit.author_date, commit.commit_date = \
             do("git log -1 '--pretty=format:%ai|%ci' " + shellquote(commit.commit)).split("|")
         return commit
