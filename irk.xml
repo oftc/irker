@@ -39,8 +39,8 @@ on localhost.</para>
 <varlistentry>
 <term>target</term>
 <listitem><para>Which server and channel to join to announced the
-message. If not prefixed with "irc:", it will prefix
-"irc://chat.freenode.net/" to the argument before passing it directly
+message. If not prefixed with "irc:" or "ircs:", it will prefix
+"ircs://irc.oftc.net/" to the argument before passing it directly
 to irkerd. This argument is passed as the "to" parameter in the JSON
 object.</para></listitem>
 </varlistentry>

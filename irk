@@ -28,7 +28,7 @@ def send(s, target, message):
 def irk(target, message, server = DEFAULT_SERVER):
     s = connect(server)
     if "irc:" not in target and "ircs:" not in target:
-        target = "irc://chat.freenode.net/{0}".format(target)
+        target = "ircs://irc.oftc.net/{0}".format(target)
     if message == '-':
         for line in fileinput.input('-'):
             send(s, target, line.rstrip('\n'))
