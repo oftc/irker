@@ -282,7 +282,7 @@ class GitExtractor(GenericExtractor):
         self.tcp = do("git config --bool --get irker.tcp")
         self.template = do("git config --get irker.template") or u'%(bold)s%(project)s:%(reset)s %(green)s%(author)s%(reset)s %(repo)s:%(yellow)s%(branch)s%(reset)s * %(bold)s%(rev)s%(reset)s / %(bold)s%(files)s%(reset)s: %(logmsg)s %(brown)s%(url)s%(reset)s'
         self.tinyifier = do("git config --get irker.tinyifier") or default_tinyifier
-        self.color = do("git config --get irker.color")
+        self.color = do("git config --get irker.color") or u"mIRC"
         self.urlprefix = do("git config --get irker.urlprefix") or u"gitweb"
         self.cialike = do("git config --get irker.cialike")
         self.filtercmd = do("git config --get irker.filtercmd")
@@ -320,10 +320,10 @@ class GitExtractor(GenericExtractor):
         # Compute a description for the revision
         if self.revformat == 'raw':
             commit.rev = commit.commit
-        elif self.revformat == 'short':
-            commit.rev = ''
-        else: # self.revformat == 'describe'
+        elif self.revformat == 'describe':
             commit.rev = do("git describe %s 2>/dev/null" % shellquote(commit.commit))
+        else: #self.revformat == 'short':
+            commit.rev = ''
         if not commit.rev:
             # Query git for the abbreviated hash
             commit.rev = do("git log -1 '--pretty=format:%h' " + shellquote(commit.commit))
