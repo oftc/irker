@@ -1,13 +1,18 @@
 # Makefile for the irker relaying daemon
 
 VERS := $(shell sed -n 's/version = "\(.\+\)"/\1/p' irkerd)
-SYSTEMDSYSTEMUNITDIR := $(shell pkg-config --variable=systemdsystemunitdir systemd)
+SYSTEMDSYSTEMUNITDIR ?= $(shell pkg-config --variable=systemdsystemunitdir systemd)
+XMLTO ?= $(shell which xmlto)
 
 # `prefix`, `mandir` & `DESTDIR` can and should be set on the command
 # line to control installation locations
 prefix ?= /usr
 mandir ?= /share/man
 target = $(DESTDIR)$(prefix)
+
+ifneq ($(strip $(XMLTO)),)
+manpages = irkerd.8 irkerhook.1 irk.1
+endif
 
 docs: irkerd.html irkerd.8 irkerhook.html irkerhook.1 irk.html irk.1
 
@@ -33,21 +38,26 @@ security.html: security.adoc
 hacking.html: hacking.adoc
 	asciidoc -o hacking.html hacking.adoc
 
-install: irk.1 irkerd.8 irkerhook.1 uninstall
+install: $(manpages) uninstall
+	sed s%@BINDIR@%$(prefix)/bin% irkerd.service.in > irkerd.service
 	install -m 755 -o 0 -g 0 -d "$(target)/bin"
 	install -m 755 -o 0 -g 0 irkerd "$(target)/bin/irkerd"
+	install -m 755 -o 0 -g 0 irkerhook.py "$(target)/bin/irkerhook"
 ifneq ($(strip $(SYSTEMDSYSTEMUNITDIR)),)
 	install -m 755 -o 0 -g 0 -d "$(DESTDIR)$(SYSTEMDSYSTEMUNITDIR)"
 	install -m 644 -o 0 -g 0 irkerd.service "$(DESTDIR)$(SYSTEMDSYSTEMUNITDIR)"
 endif
+#ifneq ($(strip $(XMLTO)),)
 	install -m 755 -o 0 -g 0 -d "$(target)$(mandir)/man8"
 	install -m 755 -o 0 -g 0 irkerd.8 "$(target)$(mandir)/man8/irkerd.8"
 	install -m 755 -o 0 -g 0 -d "$(target)$(mandir)/man1"
 	install -m 755 -o 0 -g 0 irkerhook.1 "$(target)$(mandir)/man1/irkerhook.1"
 	install -m 755 -o 0 -g 0 irk.1 "$(target)$(mandir)/man1/irk.1"
+#endif
 
 uninstall:
 	rm -f "$(target)/bin/irkerd"
+	rm -f "$(target)/bin/irkerhook"
 ifneq ($(strip $(SYSTEMDSYSTEMUNITDIR)),)
 	rm -f "$(DESTDIR)$(SYSTEMDSYSTEMUNITDIR)/irkerd.service"
 endif
@@ -56,7 +66,7 @@ endif
 	rm -f "$(target)$(mandir)/man1/irk.1"
 
 clean:
-	rm -f irkerd.8 irkerhook.1 irk.1 irker-*.tar.gz *~ *.html
+	rm -f $(manpages) irkerd.service irker-*.tar.gz *~ *.html
 
 pylint:
 	@pylint --score=n irkerd irkerhook.py
