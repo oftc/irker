@@ -25,6 +25,7 @@ Requires Python 2.7, or:
 # These things might need tuning
 
 HOST = "localhost"
+HOST6 = "localhost"
 PORT = 6659
 
 PROXY_TYPE = None # Use proxy if set 1: SOCKS4, 2: SOCKS5, 3: HTTP
@@ -152,6 +153,14 @@ class InvalidRequest(ValueError):
     "An invalid JSON request"
     # pylint: disable=unnecessary-pass
     pass
+
+class TCP6Server(socketserver.TCPServer):
+    "TCP server that supports IPv6"
+    address_family = socket.AF_INET6
+
+class UDP6Server(socketserver.UDPServer):
+    "UDP server that supports IPv6"
+    address_family = socket.AF_INET6
 
 class IRCClient():
     "An IRC client session to one or more servers."
@@ -1022,6 +1031,9 @@ if __name__ == '__main__':
         '-H', '--host', metavar='ADDRESS', default=HOST,
         help='IP address to listen on')
     parser.add_argument(
+        '-H6', '--host6', metavar='ADDRESS', default=HOST,
+        help='IPv6 address to listen on')
+    parser.add_argument(
         '-l', '--log-file', metavar='PATH',
         help='file for saving captured message traffic')
     parser.add_argument(
@@ -1098,7 +1110,9 @@ if __name__ == '__main__':
         try:
             tcpserver = socketserver.TCPServer((args.host, PORT), IrkerTCPHandler)
             udpserver = socketserver.UDPServer((args.host, PORT), IrkerUDPHandler)
-            for server in [tcpserver, udpserver]:
+            tcp6server = TCPServer((args.host6, PORT), IrkerTCPHandler)
+            udp6server = UDPServer((args.host6, PORT), IrkerUDPHandler)
+            for server in [tcpserver, udpserver, tcp6server, udp6server]:
                 server = threading.Thread(target=server.serve_forever)
                 server.setDaemon(True)
                 server.start()
