@@ -1,5 +1,8 @@
 			irker history 
 
+Repository head::
+  Add support for IPv6 lstening.
+
 2.21: 2022-01-25::
   Restore function of immediate option.
 
