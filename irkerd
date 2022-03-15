@@ -312,22 +312,42 @@ class IRCServerConnection():
         self.real_server_name = ""
         self.target = target
         self.nickname = nickname
-        try:
-            if socks_on and PROXY_TYPE:
-                self.socket = socks.socksocket(socket.AF_INET, socket.SOCK_STREAM)
-                self.socket.set_proxy(PROXY_TYPE, PROXY_HOST, PROXY_PORT)
-            else:
-                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            if target.ssl:
-                self.socket = self._wrap_socket(
-                    socket=self.socket, target=target, **kwargs)
-            self.socket.bind(('', 0))
-            self.socket.settimeout(timeout)
-            self.socket.connect((target.servername, target.port))
-            self.socket.settimeout(None)
-        except socket.error as err:
-            raise IRCServerConnectionError("Couldn't connect to socket: %s" % err)
 
+        err = None
+        for res in socket.getaddrinfo(target.servername, target.port, 0, socket.SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            try:
+                if socks_on and PROXY_TYPE:
+                    self.socket = socks.socksocket(af, socktype, proto)
+                    self.socket.set_proxy(PROXY_TYPE, PROXY_HOST, PROXY_PORT)
+                else:
+                    self.socket = socket.socket(af, socktype, proto)
+                if target.ssl:
+                    self.socket = self._wrap_socket(
+                        socket=self.socket, target=target, **kwargs)
+                self.socket.bind(('', 0))
+                self.socket.settimeout(timeout)
+                self.socket.connect(sa)
+                self.socket.settimeout(None)
+
+                # Break explicitly a reference cycle
+                err = None
+                break
+
+            except socket.error as _:
+                err = _
+                if self.socket is not None:
+                    self.socket.close()
+
+        if self.socket is None:
+            err = socket.error("getaddrinfo returns an empty list")
+
+        if err is not None:
+            try:
+                raise IRCServerConnectionError("Couldn't connect to socket: %s" % err)
+            finally:
+                # Break explicitly a reference cycle
+                err = None
         if target.ssl:
             self._check_hostname(target=target)
         if target.password:
