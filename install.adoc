@@ -70,8 +70,8 @@ installed to launch irkerd as a boot-time service on that system.
 
 irker.service is a systemd unit that can run irkerd as a boot-time
 service on systems that support systemd. This is configured to
-run irkerd under a seperate user account (irker), so this needs to
-be setup before starting irker, or the unit needs to be modified
+run irkerd under a separate user account (irker), so this needs to
+be set up before starting irker, or the unit needs to be modified
 to use a different user.
 
 == Installing irkerhook.py ==
@@ -81,15 +81,6 @@ hook script of your repo.  Under Subversion, the call goes in your
 repo's post-commit script. Under Mercurial there are two different
 ways to install it. See the irkerhook manual page for details; the
 source is irkerhook.xml in this distribution.
-
-Note that if you were using the CIA service and have ciabot.py in your
-git update script, you can simply replace this
-
-/path/to/ciabot.py ${refname} $(git rev-list ${oldhead}..${newhead} | tac)
-
-with this:
-
-/path/to/irkerhook.py --refname=${refname} $(git rev-list ${oldhead}..${newhead} | tac)
 
 SourceForge is a special case: see
 
@@ -116,16 +107,10 @@ If you need help, there's a project chat channel at
 
 == Read-only access ==
 
-If, for whatever reason, you can't modify the hook scripts in your 
-repository, there is still hope.
-
-There's a proxy that takes CIA XML-RPC notifications 
-and passes them to a local irker instance. Find it here:
-
-    https://github.com/nenolod/irker-cia-proxy
-
-There's also a poller daemon that can watch activity in a Subversion
-repository and ship notifications via an irker instance.
+If, for whatever reason, you can't modify the hook scripts in your
+repository, there is still hope. There's a poller daemon that can
+watch activity in a Subversion repository and ship notifications via
+an irker instance.
 
     https://github.com/shikadilord/irker-svnpoller
 
