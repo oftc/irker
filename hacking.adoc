@@ -56,7 +56,7 @@ Subversion support in irkerhook.py. Since the 1.0 release he has
 kept as close an eye on the code as the author and has fixed at least
 as many bugs.
 
-//W. here causes asciidoc to see thus as a list entry.
+//W. here causes asciidoc to see this as a list entry.
 W Trevor King <wking@tremily.us> added SSL/TLS support and did
 significant refactoring work.
 
