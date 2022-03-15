@@ -5,7 +5,7 @@ such as SourceForge, GitHub, GitLab, Gna, and Savannah.  This
 file explains the theory of operation, how to install the code,
 and how to test it.
 
-= Prerequisites =
+== Prerequisites ==
 
 You should have Python 3 installed.  While Python 2 support
 has not yet been removed, it is unmaintained and vulnerable
