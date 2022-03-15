@@ -315,7 +315,7 @@ class IRCServerConnection():
 
         err = None
         for res in socket.getaddrinfo(target.servername, target.port, 0, socket.SOCK_STREAM):
-            af, socktype, proto, canonname, sa = res
+            af, socktype, proto, _, sa = res
             try:
                 if socks_on and PROXY_TYPE:
                     self.socket = socks.socksocket(af, socktype, proto)
@@ -918,13 +918,13 @@ class Irker:
     #    LOG.info("joinless message refusal from %s on %s" % (
     #        target, connection.target))
     #    if connection.context:
-    #        connection.context.handle_cannotsendtochan(target)        
+    #        connection.context.handle_cannotsendtochan(target)
     def _handle_mode(self, connection, event):
         "Process mode reply."
         LOG.info("mode reply %s on %s with %s" % (
             event.target, connection.target, event.arguments))
         if connection.context:
-            connection.context.handle_mode(event.target, event.arguments[0])        
+            connection.context.handle_mode(event.target, event.arguments[0])
     def _handle_every_raw_message(self, _connection, event):
         "Log all messages when in watcher mode."
         if self.logfile:
@@ -1130,6 +1130,7 @@ if __name__ == '__main__':
         try:
             tcpserver = socketserver.TCPServer((args.host, PORT), IrkerTCPHandler)
             udpserver = socketserver.UDPServer((args.host, PORT), IrkerUDPHandler)
+            # pylint: disable=undefined-variable
             tcp6server = TCPServer((args.host6, PORT), IrkerTCPHandler)
             udp6server = UDPServer((args.host6, PORT), IrkerUDPHandler)
             for server in [tcpserver, udpserver, tcp6server, udp6server]:
