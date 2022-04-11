@@ -1131,8 +1131,8 @@ if __name__ == '__main__':
             tcpserver = socketserver.TCPServer((args.host, PORT), IrkerTCPHandler)
             udpserver = socketserver.UDPServer((args.host, PORT), IrkerUDPHandler)
             # pylint: disable=undefined-variable
-            tcp6server = TCPServer((args.host6, PORT), IrkerTCPHandler)
-            udp6server = UDPServer((args.host6, PORT), IrkerUDPHandler)
+            tcp6server = TCP6Server((args.host6, PORT), IrkerTCPHandler)
+            udp6server = UDP6Server((args.host6, PORT), IrkerUDPHandler)
             for server in [tcpserver, udpserver, tcp6server, udp6server]:
                 server = threading.Thread(target=server.serve_forever)
                 server.setDaemon(True)
