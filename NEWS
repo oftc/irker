@@ -1,5 +1,8 @@
 			irker history 
 
+2.23: 2023-01-27::
+  Fix typo in support for IPv6 listening.
+
 2.22: 2022-03-15::
   Add support for IPv6 listening.
 
