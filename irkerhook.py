@@ -49,7 +49,7 @@ version = "2.21"
 # pylint: disable=multiple-imports,wrong-import-position
 import os, sys, socket, subprocess, locale, datetime, re
 
-try
+try:
     from shlex import quote as shellquote
 except ImportError:
     from pipes import quote as shellquote
