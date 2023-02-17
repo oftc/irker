@@ -21,7 +21,7 @@ does not override it.
 # SPDX-License-Identifier: BSD-2-Clause
 from __future__ import print_function, absolute_import
 
-# pylint: disable=line-too-long,invalid-name,missing-function-docstring,missing-class-docstring,no-else-break,no-else-return,too-many-instance-attributes,too-many-locals,too-many-branches,too-many-statements,redefined-outer-name,import-outside-toplevel,raise-missing-from
+# pylint: disable=line-too-long,invalid-name,missing-function-docstring,missing-class-docstring,no-else-break,no-else-return,too-many-instance-attributes,too-many-locals,too-many-branches,too-many-statements,redefined-outer-name,import-outside-toplevel,raise-missing-from,consider-using-f-string,redundant-u-string-prefix,redundant-u-string-prefix,consider-using-with
 
 default_server = "localhost"
 IRKER_PORT = 6659
@@ -203,29 +203,30 @@ class GenericExtractor:
         if not os.path.exists(conf):
             return
         ln = 0
-        for line in open(conf):
-            ln += 1
-            if line.startswith("#") or not line.strip():
-                continue
-            if line.count('=') != 1:
-                sys.stderr.write('%s:%d: missing = in config line\n' \
-                                 % (conf, ln))
-                continue
-            fields = line.split('=')
-            if len(fields) != 2:
-                sys.stderr.write('%s:%d: too many fields in config line\n' \
-                                 % (conf, ln))
-                continue
-            variable = fields[0].strip()
-            value = fields[1].strip()
-            if value.lower() == "true":
-                value = True
-            elif value.lower() == "false":
-                value = False
-            # User cannot set maxchannels - only a command-line arg can do that.
-            if variable == "maxchannels":
-                return
-            setattr(self, variable, value)
+        with open(conf, encoding='ascii', errors='surrogateescape') as rfp:
+            for line in rfp:
+                ln += 1
+                if line.startswith("#") or not line.strip():
+                    continue
+                if line.count('=') != 1:
+                    sys.stderr.write('%s:%d: missing = in config line\n' \
+                                     % (conf, ln))
+                    continue
+                fields = line.split('=')
+                if len(fields) != 2:
+                    sys.stderr.write('%s:%d: too many fields in config line\n' \
+                                     % (conf, ln))
+                    continue
+                variable = fields[0].strip()
+                value = fields[1].strip()
+                if value.lower() == "true":
+                    value = True
+                elif value.lower() == "false":
+                    value = False
+                # User cannot set maxchannels - only a command-line arg can do that.
+                if variable == "maxchannels":
+                    return
+                setattr(self, variable, value)
     def do_overrides(self):
         "Make command-line overrides possible."
         for tok in self.arguments:
