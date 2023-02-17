@@ -600,8 +600,7 @@ class Connection:
         "Enque a message for transmission."
         if self.thread is None or not self.thread.is_alive():
             self.status = "unseen"
-            self.thread = threading.Thread(target=self.dequeue)
-            self.thread.setDaemon(True)
+            self.thread = threading.Thread(target=self.dequeue, daemon=True)
             self.thread.start()
         self.queue.put((channel, message, key))
         if quit_after:
@@ -857,8 +856,7 @@ class Irker:
         self.irc.add_event_handler("every_raw_message", self._handle_every_raw_message)
         self.servers = {}
     def thread_launch(self):
-        thread = threading.Thread(target=self.irc.spin)
-        thread.setDaemon(True)
+        thread = threading.Thread(target=self.irc.spin, daemon=True)
         #self.irc._thread = thread
         thread.start()
     def _handle_ping(self, connection, _event):
@@ -1134,8 +1132,7 @@ if __name__ == '__main__':
             tcp6server = TCP6Server((args.host6, PORT), IrkerTCPHandler)
             udp6server = UDP6Server((args.host6, PORT), IrkerUDPHandler)
             for server in [tcpserver, udpserver, tcp6server, udp6server]:
-                server = threading.Thread(target=server.serve_forever)
-                server.setDaemon(True)
+                server = threading.Thread(target=server.serve_forever, daemon=True)
                 server.start()
             try:
                 signal.pause()
