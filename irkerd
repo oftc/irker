@@ -33,7 +33,7 @@ PROXY_HOST = ""
 PROXY_PORT = 1080
 
 XMIT_TTL = (30 * 24 * 60 * 60)	# Time to live, seconds from last transmit
-PING_TTL = (15 * 60)		# Time to live, seconds from last PING
+PING_TTL = (6 * 60)		# Time to live, seconds from last PING
 HANDSHAKE_TTL = 60		# Time to live, seconds from nick transmit
 CHANNEL_TTL = (3 * 60 * 60)	# Time to live, seconds from last transmit
 DISCONNECT_TTL = (24 * 60 * 60)	# Time to live, seconds from last connect
@@ -593,8 +593,8 @@ class Connection:
                     channel, self.target, UNICODE_TYPE(err)))
                 LOG.debug(traceback.format_exc())
             time.sleep(ANTI_FLOOD_DELAY)
-        self.last_xmit = time.time()
-        LOG.info("XMIT_TTL bump (%s transmission) at %s" % (
+        self.last_xmit = self.last_ping = time.time()
+        LOG.info("XMIT_TTL/PING_TTL bump (%s transmission) at %s" % (
             self.target, time.asctime()))
     def enqueue(self, channel, message, key, quit_after=False):
         "Enque a message for transmission."
