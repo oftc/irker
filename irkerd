@@ -1135,6 +1135,11 @@ if __name__ == '__main__':
                 server = threading.Thread(target=server.serve_forever, daemon=True)
                 server.start()
             try:
+                if "NOTIFY_SOCKET" in os.environ:
+                    sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+                    sock.connect(os.environ["NOTIFY_SOCKET"])
+                    sock.send(b"READY=1")
+                    sock.close()
                 signal.pause()
             except KeyboardInterrupt:
                 raise SystemExit(1)
